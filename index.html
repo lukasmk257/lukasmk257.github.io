@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOOPCALCULATOR V2.0</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="container">
+    <h1>LOOPCALCULATOR V2.0</h1>
+    <form id="calcForm">
+      <label for="lrv_PV">LRV_PV:</label>
+      <input type="number" id="lrv_PV" step="0.01" required>
+      <br>
+      <label for="urv_PV">URV_PV:</label>
+      <input type="number" id="urv_PV" step="0.01" required>
+      <br>
+      <label for="pv">PV:</label>
+      <input type="number" id="pv" step="0.01" required>
+      <br>
+      <input type="submit" value="Calcular">
+      <input type="button" value="Reset" onclick="resetValues()" class="resetButton">
+    </form>
+    <div id="result"></div>
+    <div id="equation"></div>
+    <div class="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
