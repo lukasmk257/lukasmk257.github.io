@@ -15,9 +15,9 @@ function calculate() {
 
   const mA = m * pv + b;
 
-  document.getElementById('result').textContent = `mA = ${mA.toFixed(2)}`;
+  document.getElementById('result').textContent = `mA = ${mA.toFixed(4)}`;
 
-  const equationText = `Ecuación: mA = ${m.toFixed(2)} * PV + ${b.toFixed(2)}`;
+  const equationText = `Ecuación: mA = ${m.toFixed(4)} * PV + ${b.toFixed(4)}`;
   document.getElementById('equation').textContent = equationText;
 
   if (chart) {
