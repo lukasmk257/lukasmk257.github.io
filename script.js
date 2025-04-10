@@ -32,7 +32,7 @@ function calculate() {
   `;
 
   equation.innerHTML = `
-    Fórmula: mA = ((16 / 100) * ${percent.toFixed(2)}) + 4 = ${mA.toFixed(2)} mA
+    Resultado: mA = ((16 / 100) * ${percent.toFixed(2)}) + 4 = ${mA.toFixed(2)} mA
   `;
 
   // Gráfico
