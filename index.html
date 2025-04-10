@@ -1,43 +1,172 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <title>Loop Calculator V2.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LOOPCALCULATOR V2</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net;">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #f7f9fc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    }
+    input, label, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #resultado {
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    canvas {
+      margin-top: 30px;
+    }
+    .formula {
+      margin-top: 20px;
+      font-family: "Courier New", monospace;
+      background: #eef;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
 </head>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('Service Worker registrado'))
-      .catch(err => console.error('Error al registrar el SW:', err));
-  }
-</script>
 <body>
-  <div id="container">
-    <h1>LOOPCALCULATOR V3.0</h1>
-    <form id="calcForm">
-      <label for="lrv_PV">LRV_PV:</label>
-      <input type="number" id="lrv_PV" step="0.01" required>
-      <br>
-      <label for="urv_PV">URV_PV:</label>
-      <input type="number" id="urv_PV" step="0.01" required>
-      <br>
-      <label for="pv">PV:</label>
-      <input type="number" id="pv" step="0.01" required>
-      <br>
-      <input type="submit" value="Calcular">
-      <input type="button" value="Reset" onclick="resetValues()" class="resetButton">
-    </form>
-    <div id="result"></div>
-    <div id="equation"></div>
-    <div class="chart-container">
-      <canvas id="chart"></canvas>
-    </div>
+
+  <h2>LOOPCALCULATOR V3.0</h2>
+
+  <label for="LRV_PV">LRV_PV:</label>
+  <input type="number" id="LRV_PV" step="any">
+
+  <label for="URV_PV">URV_PV:</label>
+  <input type="number" id="URV_PV" step="any">
+
+  <label for="PV">PV:</label>
+  <input type="number" id="PV" step="any">
+
+  <button onclick="calcular()">Calcular</button>
+
+  <div id="resultado"></div>
+
+  <div class="formula" id="formulaMath">
+    <!-- Fórmula mostrada aquí -->
   </div>
 
-  <script src="script.js"></script>
+  <canvas id="grafico" width="500" height="300"></canvas>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    let grafico = null;
+
+    function calcular() {
+      const LRV_PV = parseFloat(document.getElementById("LRV_PV").value);
+      const URV_PV = parseFloat(document.getElementById("URV_PV").value);
+      const PV = parseFloat(document.getElementById("PV").value);
+      const resultado = document.getElementById("resultado");
+      const formulaMath = document.getElementById("formulaMath");
+
+      if (isNaN(LRV_PV) || isNaN(URV_PV) || isNaN(PV)) {
+        resultado.innerText = "Por favor, completa todos los campos con valores válidos.";
+        return;
+      }
+
+      if (URV_PV === LRV_PV) {
+        resultado.innerText = "URV_PV y LRV_PV no pueden ser iguales.";
+        return;
+      }
+
+      // Cálculos
+      const percent = (100 / (URV_PV - LRV_PV)) * (PV - LRV_PV);
+      const mA = ((16 / 100) * percent) + 4;
+
+      const percentFixed = percent.toFixed(2);
+      const mAFixed = mA.toFixed(2);
+
+      resultado.innerHTML = `
+        <strong>Resultado:</strong><br>
+        • PV del instrumento: <strong>${percentFixed}%</strong><br>
+        • mA equivalentes: <strong>${mAFixed} mA</strong>
+      `;
+
+      // Mostrar ecuaciones
+      formulaMath.innerHTML = `
+        <strong>Fórmula general:</strong> mA = ((16 / 100) * PV) + 4<br>
+        <strong>Fórmula con valores:</strong> mA = ((16 / 100) * ${percentFixed}) + 4 = ${mAFixed} mA
+      `;
+
+      // Crear puntos de la curva 0–100%
+      const puntos = [];
+      const etiquetas = [];
+      for (let i = 0; i <= 100; i += 5) {
+        etiquetas.push(i + "%");
+        puntos.push(((16 / 100) * i + 4).toFixed(2));
+      }
+
+      // Actualizar gráfico
+      const ctx = document.getElementById('grafico').getContext('2d');
+      if (grafico !== null) {
+        grafico.destroy();
+      }
+
+      grafico = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: etiquetas,
+          datasets: [{
+            label: 'mA vs % del proceso',
+            data: puntos,
+            borderColor: 'rgba(0, 123, 255, 1)',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            fill: true,
+            tension: 0.1,
+            pointRadius: 2
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              title: { display: true, text: 'Corriente (mA)' },
+              min: 4, max: 20
+            },
+            x: {
+              title: { display: true, text: '% del proceso' }
+            }
+          }
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>
