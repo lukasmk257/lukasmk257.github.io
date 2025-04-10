@@ -4,8 +4,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LOOPCALCULATOR V2</title>
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('Service Worker registrado'))
+      .catch(err => console.error('Error al registrar el SW:', err));
+  }
+</script>
 <body>
   <div id="container">
     <h1>LOOPCALCULATOR V2.0</h1>
